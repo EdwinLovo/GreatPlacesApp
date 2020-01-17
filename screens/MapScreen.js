@@ -4,7 +4,8 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Platform
+  Platform,
+  Dimensions
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
@@ -137,7 +138,9 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     position: "absolute",
-    width: "100%"
+    width: Dimensions.get("window").width*0.9,
+    paddingLeft: Dimensions.get("window").width * 0.1,
+    paddingTop: 15
   },
   headerButton: {
     marginHorizontal: 20
