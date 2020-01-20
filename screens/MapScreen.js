@@ -5,8 +5,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
+  Image,
+  Button,
   Dimensions
 } from "react-native";
+import Modal from "react-native-modal";
 import MapView, { Marker } from "react-native-maps";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 
@@ -17,6 +20,7 @@ const MapScreen = props => {
   const initialLocation = props.navigation.getParam("initialLocation");
   const readonly = props.navigation.getParam("readonly");
   const [pressed, setPressed] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(initialLocation);
 
   const mapRegion = {
@@ -58,19 +62,70 @@ const MapScreen = props => {
     };
   }
 
+  let defaultMarkersCoords = [];
+  defaultMarkersCoords.push({
+    coords: {
+      latitude: 13.6813997,
+      longitude: -89.2355658
+    },
+    image: require("../assets/icons/icono-casa.png"),
+    title: "Home"
+  });
+  defaultMarkersCoords.push({
+    coords: {
+      latitude: 13.6826387,
+      longitude: -89.2372231
+    },
+    image: require("../assets/icons/icono-efectivo.png"),
+    title: "Bank"
+  });
+
   return (
     <View style={styles.container}>
+      <Modal
+        isVisible={isModalVisible}
+        style={{ alignItems: "center", justifyContent: "center" }}
+      >
+        <View style={styles.modal}>
+          <Text>Hello!</Text>
+          <Button
+            title="Hide modal"
+            onPress={() => {
+              setIsModalVisible(!isModalVisible);
+            }}
+          />
+        </View>
+      </Modal>
       <MapView
         style={styles.map}
         region={mapRegion}
         onPress={selectLocationHandler}
       >
         {markerCoordinates && (
-          <Marker
-            title="Picked Location"
-            coordinate={markerCoordinates}
-          ></Marker>
+          <Marker title="Picked Location" coordinate={markerCoordinates}>
+            {/* <Image
+              source={require("../assets/icons/icono-casa.png")}
+              style={{ height: 35, width: 35 }}
+            /> */}
+          </Marker>
         )}
+        {defaultMarkersCoords.map(data => {
+          return (
+            <Marker
+              identifier={data.title}
+              title={data.title}
+              key={data.title}
+              coordinate={data.coords}
+              onPress={event => {
+                console.log(event);
+                setIsModalVisible(!isModalVisible);
+              }}
+            >
+              <Image source={data.image} style={{ height: 22, width: 22 }} />
+            </Marker>
+          );
+        })}
+        {/* {defaultMarkersCoords.forEach(data => renderMarkers(data))} */}
       </MapView>
       {!readonly && (
         <View style={styles.searchContainer}>
@@ -138,7 +193,8 @@ MapScreen.navigationOptions = navData => {
 
 const styles = StyleSheet.create({
   container: {
-    height: "100%"
+    height: Dimensions.get("window").height,
+    width: Dimensions.get("window").width
   },
   map: {
     flex: 1
@@ -155,6 +211,14 @@ const styles = StyleSheet.create({
   headerButtonText: {
     fontSize: 16,
     color: Platform.OS === "android" ? "white" : Colors.primary
+  },
+  modal: {
+    width: Dimensions.get("window").width * 0.8,
+    height: Dimensions.get("window").height * 0.15,
+    backgroundColor: "white",
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "space-around"
   }
 });
 
