@@ -16,7 +16,7 @@ import ENV from "../env";
 const MapScreen = props => {
   const initialLocation = props.navigation.getParam("initialLocation");
   const readonly = props.navigation.getParam("readonly");
-
+  const [pressed, setPressed] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(initialLocation);
 
   const mapRegion = {
@@ -27,7 +27,7 @@ const MapScreen = props => {
   };
 
   const selectLocationHandler = event => {
-    console.log(event);
+    //console.log(event);
     if (readonly) {
       return;
     }
@@ -89,8 +89,15 @@ const MapScreen = props => {
             }}
             onPress={(data, details = null) => {
               // 'details' is provided when fetchDetails = true
+              //console.log(details);
               console.log(details);
+              setPressed(false);
               setSelectedLocation(details.geometry.location);
+            }}
+            listViewDisplayed={pressed}
+            textInputProps={{
+              onFocus: () => setPressed(true),
+              onBlur: () => setPressed(false)
             }}
             styles={{
               textInputContainer: {
@@ -138,7 +145,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     position: "absolute",
-    width: Dimensions.get("window").width*0.9,
+    width: Dimensions.get("window").width * 0.9,
     paddingLeft: Dimensions.get("window").width * 0.1,
     paddingTop: 15
   },
